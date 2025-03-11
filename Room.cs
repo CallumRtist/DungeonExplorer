@@ -9,6 +9,7 @@
             this.description = description;
         }
 
+        // When GetDescription is called, return the set description attribute (string)
         public string GetDescription()
         {
             return description;
