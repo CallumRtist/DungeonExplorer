@@ -1,18 +1,30 @@
-﻿namespace DungeonExplorer
+﻿using System;
+
+namespace DungeonExplorer
 {
     public class Room
     {
-        private string description;
+        private string _description;
+        private Item _item;
 
-        public Room(string description)
+        public Item Item
         {
-            this.description = description;
+            get { return _item; }
+            set { _item = value; }
         }
+
+        // Room Class Attributes
+        public Room(string description, Item item)
+        {
+            this._description = description;
+            this.Item = item;
+        }
+
 
         // When GetDescription is called, return the set description attribute (string)
         public string GetDescription()
         {
-            return description;
+            return _description;
         }
     }
 }
