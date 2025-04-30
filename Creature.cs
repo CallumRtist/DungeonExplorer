@@ -7,12 +7,20 @@ using System.Threading.Tasks;
 
 namespace DungeonExplorer
 {
-    abstract class Creature
+    // Attributes
+    // Name, Health, Damage
+
+    // Methods
+    // Attack, Stats
+
+    public abstract class Creature
     {
+        // Private Properties
         private string _name;
         private int _health;
         private int _damage;
 
+        // Public Properties
         public string Name
         {
             // Prevent Name from being empty
@@ -77,7 +85,7 @@ namespace DungeonExplorer
         }
 
         // Attack method, defined individually
-        public abstract void Attack();
+        public abstract void Attack(Creature enemy);
 
         // Stats method, defaults to this but can be overwritten
         public virtual void Stats()
