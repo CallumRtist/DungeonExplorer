@@ -3,37 +3,22 @@ using System.Collections.Generic;
 
 namespace DungeonExplorer
 {
-    public class Player
+    // Attributes
+    // Name, Health, Money
+
+    // Methods
+    // PickUpItem, RemoveItem, InventoryContents, PlayerStats
+
+    public class Player : Creature
     {
-        private int _health;
+        // Private Properties
         private int _money;
 
-
-        public string Name { get; private set; }
-        public int Health
-        {
-            // Prevent Health from being below 0 or above 10
-            get { return _health; }
-
-            set
-            {
-                if (value < 0)
-                {
-                    value = 0;
-                }
-
-                if (value > 10)
-                {
-                    value = 10;
-                }
-                _health = value;
-            }
-        }
+        // Public Properties
         public int Money 
         { 
             // Prevent Money from being below 0
             get { return _money; }
-
             set
             {
                 if (value < 0)
@@ -42,18 +27,29 @@ namespace DungeonExplorer
                 }
                 _money = value;
             }
-        
         }
-
-
         public List<Item> inventory { get; private set; } = new List<Item>();
 
-        // Player Class Attributes
-        public Player(string name, int health, int money) 
+        // Constructor
+        public Player(string name, int health, int damage, int money) : base(name, health, damage)
         {
-            Name = name;
-            Health = health;
             Money = money;
+        }
+
+        // When Attack is called, take away the value of player damage from the enemy's health
+        public override void Attack(Creature enemy)
+        {
+            enemy.Health =- Damage;
+            Console.WriteLine($"You inflict {Damage} damage to the enemy");
+        }
+
+        // When Stats is called, display the Players chosen Name, their current Health, the amount of damage they do and the amount of Money they have
+        public override void Stats()
+        {
+            Console.WriteLine($"Your name is {Name}");
+            Console.WriteLine($"Your current health is {Health}/10");
+            Console.WriteLine($"You do {Damage} damage");
+            Console.WriteLine($"You have {Money} coins");
         }
 
         // When PickUpItem is called, add 1 to the quantity value of that item, and add the item if not in Inv.
@@ -84,15 +80,6 @@ namespace DungeonExplorer
             {
                 Console.WriteLine($"{item.Name} x{item.Quantity}: {item.Value}");
             }
-        }
-
-        // When PlayerStats is called, display the Players chosen Name, their current Health and the amount of Money they have
-        public void PlayerStats()
-        {
-            Console.WriteLine($"Your name is {Name}");
-            Console.WriteLine($"Your current health is {Health}/10");
-            Console.WriteLine($"You have {Money} coins");
-            
         }
     }
 }
