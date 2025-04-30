@@ -4,10 +4,10 @@ using System.Collections.Generic;
 namespace DungeonExplorer
 {
     // Attributes
-    // Name, Health, Money
+    // Name, Health, Damage, Money
 
     // Methods
-    // PickUpItem, RemoveItem, InventoryContents, PlayerStats
+    // PickUpItem, RemoveItem, InventoryContents, Attack, Stats
 
     public class Player : Creature
     {
@@ -28,7 +28,7 @@ namespace DungeonExplorer
                 _money = value;
             }
         }
-        public List<Item> inventory { get; private set; } = new List<Item>();
+        public Inventory inventory { get; private set; } = new Inventory();
 
         // Constructor
         public Player(string name, int health, int damage, int money) : base(name, health, damage)
@@ -36,10 +36,15 @@ namespace DungeonExplorer
             Money = money;
         }
 
-        // When Attack is called, take away the value of player damage from the enemy's health
-        public override void Attack(Creature enemy)
+        // When Attack is called, take away the value of player damage from the monster's health
+        public override void Attack(Creature monster)
         {
-            enemy.Health =- Damage;
+            if (!(monster is Monster))
+            {
+                Console.WriteLine("Enemy must be a monster");
+                return;
+            }
+            monster.Health -= Damage;
             Console.WriteLine($"You inflict {Damage} damage to the enemy");
         }
 
@@ -55,31 +60,13 @@ namespace DungeonExplorer
         // When PickUpItem is called, add 1 to the quantity value of that item, and add the item if not in Inv.
         public void PickUpItem(Item item)
         {
-            item.Quantity += 1;
-            if (inventory.Contains(item) == false)
-            {
-                inventory.Add(item);
-            }
+            inventory.AddItem(item);
         }
 
         // When RemoveItem is called, take 1 from the quantity of that item, and remove it from Inv. if 0
         public void RemoveItem(Item item)
         {
-            item.Quantity -= 1;
-            if (item.Quantity == 0)
-            {
-                inventory.Remove(item);
-            }
-        }
-
-        // When InventoryContents is called, display the name, quantity and value of each item added to the Inv.
-        public void InventoryContents()
-        {
-            Console.WriteLine("You have...");
-            foreach (Item item in inventory)
-            {
-                Console.WriteLine($"{item.Name} x{item.Quantity}: {item.Value}");
-            }
+            inventory.RemoveItem(item);
         }
     }
 }

@@ -24,7 +24,7 @@ namespace DungeonExplorer
                 Console.WriteLine("Enemy must be the player");
                 return;
             }
-            player.Health = -Damage;
+            player.Health -= Damage;
             Console.WriteLine($"You take {Damage} damage from the enemy");
         }
     }
