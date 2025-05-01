@@ -6,15 +6,17 @@ using System.Threading.Tasks;
 
 namespace DungeonExplorer
 {
+    // Attributes
+    // Name, Value, Quantity
+
     public class Item
     {
+        // Public Properties
         public String Name;
-
         public int Value;
-
         public int Quantity;
 
-        // Item Class Attributes
+        // Item Constructor
         public Item(string name, int value, int quantity = 0)
         {
             Name = name;

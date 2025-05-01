@@ -30,7 +30,7 @@ namespace DungeonExplorer
         }
         public Inventory inventory { get; private set; } = new Inventory();
 
-        // Constructor
+        // Player Constructor
         public Player(string name, int health, int damage, int money) : base(name, health, damage)
         {
             Money = money;

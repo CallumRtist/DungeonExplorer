@@ -8,9 +8,15 @@ using System.Threading.Tasks;
 
 namespace DungeonExplorer
 {
+    // Attributes
+    // Name, Health, Damage
+
+    // Methods
+    // Attack
+
     public class Monster : Creature
     {
-        // Constructor
+        // Monster Constructor
         public Monster(string name, int health, int damage) : base(name, health, damage)
         {
             

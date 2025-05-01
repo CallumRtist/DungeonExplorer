@@ -76,7 +76,7 @@ namespace DungeonExplorer
             }
         }
 
-        // Constructor
+        // Creature Constructor
         public Creature(string name, int health, int damage)
         {
             Name = name;
