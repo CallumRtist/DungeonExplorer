@@ -6,7 +6,7 @@ namespace DungeonExplorer
     // Description, itemGen Function, monsterGen Function
 
     // Methods
-    // GetDescription
+    // GetDescription, ClearMonster
 
     public class Room
     {
@@ -31,6 +31,12 @@ namespace DungeonExplorer
         public string GetDescription()
         {
             return _description;
+        }
+
+        // Removes Instatiated Monster from the current room when called
+        public void ClearMonster()
+        {
+            Monster = null;
         }
     }
 }
