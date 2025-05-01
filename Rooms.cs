@@ -23,11 +23,14 @@ namespace DungeonExplorer
         // Create a new array called 'All' to store created rooms
         public static Room[] All = new[] { CaveRoom, PrisonRoom, ShrineRoom, CryptRoom, LabRoom, ArmouryRoom, BarracksRoom, LibraryRoom, ChasmRoom };
 
+        // Instantiates the random class
+        private static Random rand = new Random();
+
         // Method that gets a random room from the array when called
         public static Room GetRandom()
         {
-            var rand = new Random().Next(All.Length);
-            return All[rand];
+            var randIndex = rand.Next(All.Length);
+            return All[randIndex];
         }
     }
 }

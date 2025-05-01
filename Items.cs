@@ -13,14 +13,22 @@ namespace DungeonExplorer
         public static readonly Item moneyItem = new Item("Bag of Money", 25);
         public static readonly Item chestItem = new Item("Treasure Chest", 100);
 
+        // Creates an empty(null) item class called no item so theres a chance of finding no items
+        public static readonly Item NoItem = null;
+
         // Create a new array called 'All' to store created items
-        public static Item[] All = new[] { healthItem, moneyItem, chestItem };
+        public static Item[] All = new[] { healthItem, moneyItem, chestItem, NoItem };
+
+        // Instantiates the random class
+        private static Random rand = new Random();
 
         // Method that gets a random item from the array when called
         public static Item GetRandom()
         {
-            var rand = new Random().Next(All.Length);
-            return All[rand];
+            var randIndex = rand.Next(All.Length);
+            return All[randIndex];
         }
     }
 }
+    
+
