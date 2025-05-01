@@ -41,6 +41,16 @@ namespace DungeonExplorer
             {
                 Console.WriteLine($"{item.Name} x{item.Quantity}: {item.Value}");
             }
+            if (_items.Count == 0)
+            {
+                Console.WriteLine("...nothing...");
+            }
+        }
+
+        // When GetItems is called, return the list _items
+        public List<Item> GetItems()
+        {
+            return _items;
         }
     }
 }
