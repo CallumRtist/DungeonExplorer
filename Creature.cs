@@ -90,7 +90,7 @@ namespace DungeonExplorer
         // Stats method, defaults to this but can be overwritten
         public virtual void Stats()
         {
-            Console.WriteLine($"The creature is: {Name}");
+            Console.WriteLine($"\nThe creature is: {Name}");
             Console.WriteLine($"Their current health is {Health}/10");
             Console.WriteLine($"They do {Damage} damage");
         }

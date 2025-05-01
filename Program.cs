@@ -12,8 +12,6 @@ namespace DungeonExplorer
         {
             Game game = new Game();
             game.Start();
-            Console.WriteLine("Press any key to quit...");
-            Console.ReadKey();
         }
     }
 }

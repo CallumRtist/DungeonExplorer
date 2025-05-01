@@ -45,13 +45,13 @@ namespace DungeonExplorer
                 return;
             }
             monster.Health -= Damage;
-            Console.WriteLine($"You inflict {Damage} damage to the enemy");
+            Console.WriteLine($"\nYou inflict {Damage} damage to the enemy");
         }
 
         // When Stats is called, display the Players chosen Name, their current Health, the amount of damage they do and the amount of Money they have
         public override void Stats()
         {
-            Console.WriteLine($"Your name is {Name}");
+            Console.WriteLine($"\nYour name is {Name}");
             Console.WriteLine($"Your current health is {Health}/10");
             Console.WriteLine($"You do {Damage} damage");
             Console.WriteLine($"You have {Money} coins");
