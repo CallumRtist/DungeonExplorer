@@ -54,6 +54,8 @@ namespace DungeonExplorer
             player = new Player(playerName, playerHealth, 2, 0);
             gameMap = new GameMap(Rooms.StartRoom);
 
+            Testing.AssertPlayerHasName(player);
+
             // Loop while Playing Boolean is true
             while (playing)
             {
@@ -79,29 +81,44 @@ namespace DungeonExplorer
                     }
 
                     // If the current room does not contain any monsters, then display these options...
-                    if (currentRoom.Monster == null)
+                    if (currentRoom.Monster == null || currentRoom.Monster == Monsters.NoEncounter)
                     {
+                        Testing.AssertRoomDoesNotHaveMonster(gameMap);
+
                         Console.WriteLine("\nWhat would you like to do? \n\nType C to check your current stats/room type \nType E to search for items \nType \"Use *Item Name*\" to use an item \nType M to move to another room \nType Q to Quit");
+
+                        Testing.PrintCurrentRoom(gameMap);
                     }
                     // If the current room does contain monsters, then display these options (includes the attack option, removes move and quit options)...
                     else
                     {
+                        Testing.AssertRoomHasMonster(gameMap);
+
                         Console.WriteLine($"\nYou encounter a {currentRoom.Monster.Name}, What would you like to do? \n\nType A to Attack \nType E to check the enemy's stats \nType C to check your current stats/room type \nType \"Use *Item Name*\" to use an item ");
+
+                        Testing.PrintCurrentRoom(gameMap);
+                        Testing.PrintCreaturesHealth(player, currentRoom.Monster);
                     }
                     string action = Console.ReadLine().ToLower();
 
                     // Call player attack method and check if monster health now equals 0, if so run the clear monster method to remove the monster
-                    if (action == "a" && currentRoom.Monster != null)
+                    if (action == "a" && (currentRoom.Monster != null || currentRoom.Monster != Monsters.NoEncounter))
                     {
+                        Testing.AssertRoomHasMonster(gameMap);
+
                         player.Attack(currentRoom.Monster);
                         if (currentRoom.Monster.Health <= 0)
                         {
                             Console.WriteLine($"\nYou have defeated the {currentRoom.Monster.Name}!");
                             currentRoom.ClearMonster();
+
+                            Testing.AssertRoomDoesNotHaveMonster(gameMap);
                         }
                         // If the monster has not died, the monster will run its attack method on the player, if the players health equals 0, then quit the game
                         else
                         {
+                            Testing.AssertRoomHasMonster(gameMap);
+
                             currentRoom.Monster.Attack(player);
                             if (player.Health <= 0)
                             {
