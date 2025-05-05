@@ -159,7 +159,7 @@ namespace DungeonExplorer
                     {
                         if (player.inventory.GetItems().Contains(Items.healthItem))
                         {
-                            player.Health += Items.healthItem.Value;
+                            player.Health += Items.healthItem.Restoration;
                             Console.WriteLine("\nYou used the Health Potion and gained 5 health!\n");
                             player.RemoveItem(Items.healthItem);
                         }
@@ -172,7 +172,7 @@ namespace DungeonExplorer
                     {
                         if (player.inventory.GetItems().Contains(Items.moneyItem))
                         {
-                            player.Money += Items.moneyItem.Value;
+                            player.Money += Items.moneyItem.MoneyAdd;
                             Console.WriteLine("\nYou opened the Bag of Money and got 25 coins!\n");
                             player.RemoveItem(Items.moneyItem);
                         }
@@ -185,7 +185,7 @@ namespace DungeonExplorer
                     {
                         if (player.inventory.GetItems().Contains(Items.chestItem))
                         {
-                            player.Money += Items.chestItem.Value;
+                            player.Money += Items.chestItem.MoneyAdd;
                             Console.WriteLine("\nYou opened the Treasure Chest and found 100 coins!!!\n");
                             player.RemoveItem(Items.chestItem);
                         }

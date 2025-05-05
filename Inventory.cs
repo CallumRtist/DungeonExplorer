@@ -13,7 +13,7 @@ namespace DungeonExplorer
 
         public List<Item> Items { get => _items; private set => _items = value; }
 
-        // Called by the player method PickUpItem
+        // Called by the player method PickUpItem, adds the item to the inventory list
         public void AddItem(Item item)
         {
             item.Quantity += 1;
@@ -23,7 +23,7 @@ namespace DungeonExplorer
             }
         }
 
-        // Called by the player method RemoveItem
+        // Called by the player method RemoveItem, removes the item from the inventory list
         public void RemoveItem(Item item)
         {
             item.Quantity -= 1;
@@ -33,14 +33,14 @@ namespace DungeonExplorer
             }
         }
 
-        // When InventoryContents is called, display the name, quantity and value of each item added to the Inv
+        // When InventoryContents is called, call the method ShowItemStats to show the stats of each item, if the player has no items, say you have nothing
         public void InventoryContents()
         {
             Console.WriteLine("You have...");
             foreach (Item item in _items)
             {
-                Console.WriteLine($"{item.Name} x{item.Quantity}: {item.Value}");
-            }
+                item.ShowItemStats();
+            }   
             if (_items.Count == 0)
             {
                 Console.WriteLine("...nothing...");
