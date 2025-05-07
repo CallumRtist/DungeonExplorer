@@ -2,29 +2,41 @@
 
 namespace DungeonExplorer
 {
+    // Attributes
+    // Description, itemGen Function, monsterGen Function
+
+    // Methods
+    // GetDescription, ClearMonster
+
     public class Room
     {
+        // Private Properties
         private string _description;
-        private Item _item;
+        private Func<Item> _itemGen;
+        private Func<Monster> _monsterGen;
 
-        public Item Item
-        {
-            get { return _item; }
-            set { _item = value; }
-        }
+        // Public Properties
+        public Item Item { get; private set; }
+        public Monster Monster { get; private set; }
 
-        // Room Class Attributes
-        public Room(string description, Item item)
+        // Room Constructor
+        public Room(string description, Func<Item> itemGen, Func<Monster> monsterGen)
         {
             this._description = description;
-            this.Item = item;
+            this.Item = itemGen != null ? itemGen() : null;
+            this.Monster = monsterGen != null ? monsterGen() : null;
         }
-
 
         // When GetDescription is called, return the set description attribute (string)
         public string GetDescription()
         {
             return _description;
+        }
+
+        // Removes Instatiated Monster from the current room when called
+        public void ClearMonster()
+        {
+            Monster = null;
         }
     }
 }

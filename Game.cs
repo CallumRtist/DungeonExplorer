@@ -4,41 +4,14 @@ using System.Linq;
 using System.Media;
 using System.Runtime.InteropServices;
 using System.Security.Policy;
+using static System.Collections.Specialized.BitVector32;
 
 namespace DungeonExplorer
 {
     internal class Game
     {
         private Player player;
-        private Room currentRoom;
-        private List<string> roomList;
-        private List<Item> itemList;
-        private List<Item> randomItems;
-        private Random randomClass = new Random();
-
-        public Game()
-        {
-            // Create list of all Rooms
-            roomList = new List<string>() 
-            { "Starter Room","Second Room","Third Room","Fourth Room","Fifth Room","Sixth Room","Seventh Room","Eighth Room","Ninth Room","Final Room" };
-
-            // Create all item types
-            Item healthItem = new Item("Health Potion", 5);
-            Item moneyItem = new Item("Bag of Money", 25);
-            Item chestItem = new Item("Treasure Chest", 1000);
-
-            // Create list of all items & a list of all items which can be randomly found in each room
-            itemList = new List<Item>() { healthItem, moneyItem, chestItem };
-            randomItems = new List<Item>() { healthItem, moneyItem, null };
-
-        }
-
-        // When called on, generate an interger from 0 - 2 and use to select an item from the randomItems list (generate a random item)
-        public Item GenerateItem()
-        {
-            int randomItem = randomClass.Next(3);
-            return randomItems[randomItem];
-        }
+        private GameMap gameMap;
 
         public void Start()
         {
@@ -48,7 +21,7 @@ namespace DungeonExplorer
             // When S is typed set Playing Boolean to true, while loop for if any other key is pressed
             while (playing == false)
             {
-                Console.WriteLine("\nWelcome to Dungeon Explorer \nType S to Start");
+                Console.WriteLine("\nWelcome to Dungeon Explorer! \nYour goal is to earn 1000 gold... \nType S to Start");
                 string start = Console.ReadLine().ToLower();
                 if (start == "s")
                 {
@@ -78,39 +51,97 @@ namespace DungeonExplorer
             // Setting Player Name, Health and Money
             int playerHealth = 10;
 
-            player = new Player(playerName, playerHealth, 0);
+            player = new Player(playerName, playerHealth, 2, 0);
+            gameMap = new GameMap(Rooms.StartRoom);
+
+            Testing.AssertPlayerHasName(player);
 
             // Loop while Playing Boolean is true
             while (playing)
             {
-                currentRoom = new Room("Starter Room", GenerateItem());
+                var currentRoom = gameMap.GetCurrentRoom();
+                bool hasSearched = false;
+                bool inRoom = true;
 
-                // Loop for each Room Name in roomList until reaching final room (get Room name)
-                foreach (string roomDesc in roomList)
+                Monsters.SlimeMonster.Health = 4;
+                Monsters.SkeletonMonster.Health = 6;
+                Monsters.GhoulMonster.Health = 8;
+
+                Console.Clear();
+
+                // Loop until actions are completed within current room
+                while (inRoom)
                 {
-                    bool hasSearched = false;
-                    bool inRoom = true;
-                    currentRoom = new Room(roomDesc, GenerateItem());
-                    Console.WriteLine($"\nYou find yourself within the {currentRoom.GetDescription()}");
-
-                    // Loop until actions are completed within current room
-                    while (inRoom)
+                    // Winning Condition, earn 1000 gold
+                    if (player.Money == 1000)
                     {
+                        Console.WriteLine("You Won!!!");
+                        inRoom = false;
+                        playing = false;
+                    }
 
-                        
-                        Console.WriteLine("What would you like to do? \n\nType C to check your current stats/room type \nType E to search for items \nType \"Use *Item Name*\" to use an item \nType W to go to the next room");
-                        string action = Console.ReadLine().ToLower();
+                    // If the current room does not contain any monsters, then display these options...
+                    if (currentRoom.Monster == null || currentRoom.Monster == Monsters.NoEncounter)
+                    {
+                        Testing.AssertRoomDoesNotHaveMonster(gameMap);
 
-                        // Check the room description, Player health/money/inventory and name
-                        if (action == "c")
+                        Console.WriteLine("\nWhat would you like to do? \n\nType C to check your current stats/room type \nType E to search for items \nType \"Use *Item Name*\" to use an item \nType M to move to another room \nType Q to Quit");
+
+                        Testing.PrintCurrentRoom(gameMap);
+                    }
+                    // If the current room does contain monsters, then display these options (includes the attack option, removes move and quit options)...
+                    else
+                    {
+                        Testing.AssertRoomHasMonster(gameMap);
+
+                        Console.WriteLine($"\nYou encounter a {currentRoom.Monster.Name}, What would you like to do? \n\nType A to Attack \nType E to check the enemy's stats \nType C to check your current stats/room type \nType \"Use *Item Name*\" to use an item ");
+
+                        Testing.PrintCurrentRoom(gameMap);
+                        Testing.PrintCreaturesHealth(player, currentRoom.Monster);
+                    }
+                    string action = Console.ReadLine().ToLower();
+
+                    // Call player attack method and check if monster health now equals 0, if so run the clear monster method to remove the monster
+                    if (action == "a" && (currentRoom.Monster != null || currentRoom.Monster != Monsters.NoEncounter))
+                    {
+                        Testing.AssertRoomHasMonster(gameMap);
+
+                        player.Attack(currentRoom.Monster);
+                        if (currentRoom.Monster.Health <= 0)
                         {
-                            Console.WriteLine($"\nThe current room is the {currentRoom.GetDescription()}");
-                            player.PlayerStats();
-                            player.InventoryContents();
-                            Console.WriteLine("\n");
+                            Console.WriteLine($"\nYou have defeated the {currentRoom.Monster.Name}!");
+                            currentRoom.ClearMonster();
+
+                            Testing.AssertRoomDoesNotHaveMonster(gameMap);
                         }
-                        // Search the Room for items, get a random item from randomItem list, return message if room already searched
-                        if (action == "e")
+                        // If the monster has not died, the monster will run its attack method on the player, if the players health equals 0, then quit the game
+                        else
+                        {
+                            Testing.AssertRoomHasMonster(gameMap);
+
+                            currentRoom.Monster.Attack(player);
+                            if (player.Health <= 0)
+                            {
+                                Console.WriteLine("\nYou have died!");
+                                inRoom = false;
+                                playing = false;
+                            }
+                        }
+                    }
+
+                    // Check the room description, Player health/money/inventory/damage and name
+                    if (action == "c")
+                    {
+                        Console.WriteLine($"\nThe current room is the {currentRoom.GetDescription()}");
+                        player.Stats();
+                        player.inventory.InventoryContents();
+                        Console.WriteLine("\n");
+                    }
+
+                    // Search the Room for items, run pick up item method if there is an item, return message if room already searched
+                    if (action == "e")
+                    {
+                        if (currentRoom.Monster == null)
                         {
                             if (hasSearched == true)
                             {
@@ -132,54 +163,73 @@ namespace DungeonExplorer
                                 }
 
                                 hasSearched = true;
-
-                                // Will give Treasure Item in the Final Room
-                                if (roomDesc == "Final Room")
-                                {
-                                    Console.WriteLine("\nYou searched the room and found... ");
-                                    Console.WriteLine("...a Treasure Chest!!!");
-                                    player.PickUpItem(itemList[2]);
-                                    hasSearched = true;
-                                }
                             }
                         }
-
-                        // Use Item
-                        if (action == "use health potion")
+                        else
                         {
-                            player.Health += itemList[0].Value;
-                            Console.WriteLine("\nYou used the Health Postion and gained 5 health!\n");
-                            player.RemoveItem(itemList[0]);
-                        }
-                        if (action == "use bag of money")
-                        {
-                            player.Money += itemList[1].Value;
-                            Console.WriteLine("\nYou opened the Bag of Money and got 25 coins!\n");
-                            player.RemoveItem(itemList[1]);
-                        }
-                        if (action == "use treasure chest")
-                        {
-                            player.Money += itemList[2].Value;
-                            Console.WriteLine("\nYou opened the Treasure Chest and found 1000 coins!!!\n");
-                            player.RemoveItem(itemList[2]);
-                        }
-
-                        // Go to the next Room, if Final Room then quit game by setting Playing Boolean to false
-                        if (action == "w")
-                        {
-                            if (roomDesc == "Final Room")
-                            {
-                                Console.WriteLine("\nYou Escaped!");
-                                playing = false;
-                            }
-                            inRoom = false;
-                            
+                            currentRoom.Monster.Stats();
                         }
                     }
+
+                    // Use item, checks player has the item and removes the item from the list after use
+                    if (action == "use health potion")
+                    {
+                        if (player.inventory.GetItems().Contains(Items.healthItem))
+                        {
+                            player.Health += Items.healthItem.Restoration;
+                            Console.WriteLine("\nYou used the Health Potion and gained 5 health!\n");
+                            player.RemoveItem(Items.healthItem);
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nYou do not have a health potion...");
+                        }
+                    }
+                    if (action == "use bag of money")
+                    {
+                        if (player.inventory.GetItems().Contains(Items.moneyItem))
+                        {
+                            player.Money += Items.moneyItem.MoneyAdd;
+                            Console.WriteLine("\nYou opened the Bag of Money and got 25 coins!\n");
+                            player.RemoveItem(Items.moneyItem);
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nYou do not have a bag of money...");
+                        }
+                    }
+                    if (action == "use treasure chest")
+                    {
+                        if (player.inventory.GetItems().Contains(Items.chestItem))
+                        {
+                            player.Money += Items.chestItem.MoneyAdd;
+                            Console.WriteLine("\nYou opened the Treasure Chest and found 100 coins!!!\n");
+                            player.RemoveItem(Items.chestItem);
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nYou do not have a treasure chest...");
+                        }
+                    }
+
+                    // Move to another room and choose a direction, call GameMap Move method using direction inputted
+                    if (action == "m" && currentRoom.Monster == null)
+                    {
+                        Console.WriteLine("\nWhich direction would you like to go? \nType Up, Down, Left or Right");
+                        string direction = Console.ReadLine().ToLower();
+
+                        gameMap.Move(direction);
+
+                        inRoom = false;
+                    }
+
+                    // If player types Q, quit the game
+                    if (action == "q" && currentRoom.Monster == null)
+                    {
+                        inRoom = false;
+                        playing = false;
+                    }
                 }
-                
-
-
             }
         }
     }

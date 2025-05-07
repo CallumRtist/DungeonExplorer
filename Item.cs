@@ -6,20 +6,29 @@ using System.Threading.Tasks;
 
 namespace DungeonExplorer
 {
-    public class Item
+    // Attributes
+    // Name, Quantity
+
+    // Methods
+    // ShowItemStats
+
+    public abstract class Item
     {
+        // Public Properties
         public String Name;
-
-        public int Value;
-
         public int Quantity;
 
-        // Item Class Attributes
-        public Item(string name, int value, int quantity = 0)
+        // Item Constructor
+        public Item(string name, int quantity = 0)
         {
             Name = name;
-            Value = value;
             Quantity = quantity;
+        }
+
+        // When called returns the Items name and quantity attributes, can be expanded upon in subclasses
+        public virtual void ShowItemStats()
+        {
+            Console.Write($"{Name} x{Quantity}");
         }
     }
 }
